@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Capacitors as Communicators · II — The Channel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --scope:#0a0f0c;--slate:#0e1512;--panel:#121b17;--grid:#1c2b24;
+    --phos:#6fe6a0;--phos-dim:#3a7a58;--signal:#f0a830;--current:#5fd0e0;
+    --paper:#e8efe9;--paper-dim:#8fa89a;--rule:#1c2b2433;--rose:#e07a9a;--gap:#c98fe0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{background:var(--scope);color:var(--paper);font-family:'Newsreader',Georgia,serif;
+    font-size:18px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+
+  .hero{min-height:80vh;display:flex;flex-direction:column;justify-content:center;padding:70px 0 40px}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--current);margin-bottom:22px;font-weight:500}
+  .kicker .s{color:var(--phos-dim)}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(40px,8.5vw,80px);line-height:.98;letter-spacing:-.03em}
+  h1 .green{color:var(--phos)} h1 .gap{color:var(--gap)}
+  .lede{font-size:clamp(19px,2.4vw,24px);color:var(--paper-dim);max-width:620px;margin-top:30px;line-height:1.5}
+  .lede b{color:var(--paper);font-weight:500} .lede .amber{color:var(--signal)} .lede .gap{color:var(--gap)}
+  .recall{font-family:'IBM Plex Mono',monospace;margin-top:34px;font-size:clamp(18px,3vw,26px);color:var(--phos);letter-spacing:.02em}
+  .recall .v{color:var(--signal)} .recall .i{color:var(--current)} .recall .c{color:var(--paper)}
+  .recall-cap{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--paper-dim);margin-top:12px}
+
+  .sec{padding:58px 0;border-top:1px solid var(--rule)}
+  .tag{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--current);margin-bottom:14px;font-weight:500}
+  .tag.g{color:var(--gap)}
+  h2{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(26px,4.5vw,38px);line-height:1.05;letter-spacing:-.015em}
+  h2 .green{color:var(--phos)} h2 .gap{color:var(--gap)}
+  .sec p{margin:18px 0;color:var(--paper);max-width:680px}
+  .sec p.dim{color:var(--paper-dim)}
+  .sec p b{color:var(--paper);font-weight:600}
+  .sec p .amber{color:var(--signal);font-weight:500} .sec p .cyan{color:var(--current);font-weight:500}
+  .sec p .green{color:var(--phos);font-weight:500} .sec p .gapc{color:var(--gap);font-weight:500}
+  .pull{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:clamp(20px,3vw,27px);line-height:1.35;color:var(--phos);margin:30px 0;padding-left:20px;border-left:3px solid var(--phos-dim)}
+  .pull.gap{color:var(--gap);border-left-color:#7a5a8e}
+  code{font-family:'IBM Plex Mono',monospace;font-size:.85em;color:var(--current);background:#0e1512;padding:2px 7px;border-radius:5px}
+  .flag{font-family:'Newsreader';font-size:15.5px;color:var(--paper-dim);font-style:italic;margin:18px 0;padding:14px 18px;background:#0e151266;border:1px solid var(--rule);border-radius:8px}
+  .flag b{color:var(--rose);font-style:normal;font-weight:600;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.15em;text-transform:uppercase;display:block;margin-bottom:6px}
+
+  .inst{margin:30px 0;border:1px solid var(--grid);border-radius:14px;overflow:hidden;background:var(--slate)}
+  .inst.gap{border-color:#3a2a44}
+  .inst-bar{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--grid);font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--paper-dim)}
+  .inst-bar .led{width:9px;height:9px;border-radius:50%;background:var(--phos);box-shadow:0 0 8px var(--phos)}
+  .inst.gap .inst-bar .led{background:var(--gap);box-shadow:0 0 8px var(--gap)}
+  .inst-bar .ttl{color:var(--phos)} .inst.gap .inst-bar .ttl{color:var(--gap)}
+  canvas{display:block;width:100%;height:auto;background:var(--scope)}
+  .ctrls{padding:16px 18px;display:flex;flex-wrap:wrap;gap:18px;align-items:center;border-top:1px solid var(--grid)}
+  .ctrl{display:flex;flex-direction:column;gap:6px;flex:1;min-width:150px}
+  .ctrl label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--paper-dim)}
+  .ctrl label .val{color:var(--signal);float:right}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--grid);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--phos);cursor:pointer;box-shadow:0 0 8px var(--phos-dim)}
+  input[type=range]::-moz-range-thumb{width:18px;height:18px;border:0;border-radius:50%;background:var(--phos);cursor:pointer}
+  input:focus-visible{outline:2px solid var(--phos);outline-offset:3px}
+  .segs{display:flex;gap:6px;flex-wrap:wrap}
+  .seg{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:7px 12px;border:1px solid var(--grid);border-radius:8px;background:var(--panel);color:var(--paper-dim);cursor:pointer;touch-action:manipulation}
+  .seg.on{border-color:var(--phos);color:var(--phos);background:rgba(111,230,160,.1)}
+  .seg:focus-visible{outline:2px solid var(--phos);outline-offset:2px}
+  .readout{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--paper-dim);padding:0 18px 16px;line-height:1.6}
+  .readout b{color:var(--current)} .readout .amber{color:var(--signal)} .readout .gapc{color:var(--gap)}
+
+  .foot{padding:50px 0 80px;border-top:1px solid var(--rule);margin-top:40px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--paper-dim);line-height:2}
+  .foot b{color:var(--phos)}
+  .next{margin:30px 0;padding:20px;border:1px solid var(--grid);border-radius:12px}
+  .next .nt{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--current);margin-bottom:10px}
+  .next ol{margin:0;padding-left:22px;color:var(--paper-dim);font-size:15.5px;line-height:1.9}
+  .next ol li b{color:var(--paper)} .next ol li.done{color:var(--phos)}
+
+  @media (max-width:560px){body{font-size:17px}.ctrl{min-width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">Capacitors as Communicators <span class="s">·</span> Paper II — The Channel</div>
+    <h1>Carry the wiggle.<br>Cross the <span class="gap">gap</span>.</h1>
+    <p class="lede">Paper I showed the one behavior: a capacitor reports <span class="amber">change</span>, never state. Now watch that single trick do three jobs — <b>strip a bias</b>, <b>choose which changes pass</b>, and <b>leap a gap with no wire at all</b>. Same law each time.</p>
+    <div class="recall"><span class="i">i</span> <span class="c">=</span> <span class="c">C</span> · <span class="c">d</span><span class="v">v</span><span class="c">/dt</span></div>
+    <div class="recall-cap">still the only law · every instrument below is this, wearing a different coat</div>
+  </header>
+
+  <!-- INSTRUMENT 3: AC COUPLING -->
+  <section class="sec">
+    <div class="tag">§5 · instrument three</div>
+    <h2>AC coupling — <span class="green">drop the bias, pass the message</span></h2>
+    <p>The most common capacitor in all of communications does exactly one thing: it sits <em>in series</em> with a signal and refuses to pass the part that isn't moving. A microphone's output, a radio stage, an audio line — they often ride on a steady DC voltage that's just <b>bias</b>, not information. Put a capacitor in the path and the bias is <span class="cyan">blocked</span> while the wiggle <span class="amber">sails through</span>. It falls straight out of Paper I: the steady part has zero slope, so the cap is blind to it; only the changing part survives.</p>
+
+    <div class="inst">
+      <div class="inst-bar"><span class="led"></span><span class="ttl">THE COUPLING CAP</span> · signal in (on a bias) → signal out (bias stripped)</div>
+      <canvas id="couple"></canvas>
+      <div class="ctrls">
+        <div class="ctrl"><label>DC bias on the input <span class="val" id="cBval">+3.0</span></label>
+          <input type="range" id="cBias" min="-4" max="4" step="0.1" value="3"></div>
+        <div class="ctrl"><label>signal amplitude <span class="val" id="cAval">1.0</span></label>
+          <input type="range" id="cAmp" min="0" max="2" step="0.05" value="1"></div>
+      </div>
+      <div class="readout" id="cRead"><span class="amber">amber</span> = input riding on its bias · <span class="gapc">green</span> = what comes out the other side: the same wiggle, centered on zero. the bias never made it across.</div>
+    </div>
+    <p class="pull">The bias is the state. The wiggle is the message. The capacitor passes only the message — because it was only ever a change-detector.</p>
+  </section>
+
+  <!-- INSTRUMENT 4: RC FILTER -->
+  <section class="sec">
+    <div class="tag">§6 · instrument four</div>
+    <h2>The RC filter — <span class="green">choose which changes count</span></h2>
+    <p>If a capacitor passes change, the obvious next question is: <em>which</em> change? Pair it with a resistor and the answer becomes tunable. Fast wiggles (high frequency) and slow drifts (low frequency) get treated differently, and a single number sets the dividing line — the <b>cutoff frequency</b>, <code>fc = 1 / (2πRC)</code>. Below it one way, above it the other.</p>
+    <p class="dim">Wire the cap one way and you get a <span class="cyan">high-pass</span> filter — fast changes through, slow drift rejected (this is the coupling cap, generalized). Flip it and you get a <span class="amber">low-pass</span> — slow changes through, fast jitter smoothed away. Selective listening, built from one cap and one resistor.</p>
+
+    <div class="inst">
+      <div class="inst-bar"><span class="led"></span><span class="ttl">THE RC FILTER</span> · gain vs frequency · the cutoff at fc</div>
+      <canvas id="filter"></canvas>
+      <div class="ctrls">
+        <div class="ctrl" style="flex:2;min-width:100%"><label>filter type</label>
+          <div class="segs" id="fType">
+            <div class="seg on" data-t="hp">high-pass (block drift)</div>
+            <div class="seg" data-t="lp">low-pass (smooth jitter)</div>
+          </div></div>
+        <div class="ctrl"><label>cutoff fc <span class="val" id="fFval">160 Hz</span></label>
+          <input type="range" id="fCut" min="20" max="2000" step="10" value="160"></div>
+        <div class="ctrl"><label>test tone <span class="val" id="fTval">160 Hz</span></label>
+          <input type="range" id="fTone" min="20" max="2000" step="10" value="160"></div>
+      </div>
+      <div class="readout" id="fRead">the curve is the filter's gain at every frequency · the <span class="amber">marker</span> is your test tone · at fc the gain is 0.707 (−3 dB), the textbook corner.</div>
+    </div>
+    <p class="dim">Slide the test tone across the cutoff and watch the gain hand it through or turn it away. The corner isn't a wall — it's a smooth 45°-per-decade slope — which is itself a consequence of <code>i = C·dv/dt</code> integrated against a resistor.</p>
+  </section>
+
+  <!-- INSTRUMENT 5: THE GAP -->
+  <section class="sec">
+    <div class="tag g">§7 · instrument five · the signature</div>
+    <h2>Capacitive coupling — <span class="gap">the message across a gap</span></h2>
+    <p>Here is the one that matters, the rigorous version of every gap you've ever wondered about. Two conductors near each other <em>are</em> a capacitor — you don't have to build one. So when the voltage on the first plate <span class="amber">changes</span>, a current flows in the second plate <span class="gapc">across the empty gap</span> — even though <b>no charge ever crosses</b>. The plates never touch. The message arrives anyway.</p>
+    <p>What carries it is the <b>changing electric field</b> in the gap. James Clerk Maxwell named this <span class="gapc">displacement current</span> in 1861 — and it's not a metaphor for current, it's a term he had to <em>add</em> to make his equations consistent, the missing piece that predicted electromagnetic waves and therefore radio, light, all of it. And the punchline, checked to the digit: displacement current is <code>ε₀·A·dE/dt</code>, which equals <code>C·dv/dt</code> exactly. <b>The gap-crossing is the same law as Paper I.</b></p>
+
+    <div class="inst gap">
+      <div class="inst-bar"><span class="led"></span><span class="ttl">THE GAP</span> · driven plate ↔ pickup plate · displacement current across empty space</div>
+      <canvas id="gap"></canvas>
+      <div class="ctrls">
+        <div class="ctrl"><label>drive frequency <span class="val" id="gFval">1.0×</span></label>
+          <input type="range" id="gFreq" min="0.3" max="3" step="0.05" value="1"></div>
+        <div class="ctrl"><label>gap distance <span class="val" id="gDval">1.0×</span></label>
+          <input type="range" id="gDist" min="0.6" max="2.2" step="0.05" value="1"></div>
+      </div>
+      <div class="readout" id="gRead"><span class="amber">left plate</span> driven · <span class="gapc">field lines</span> flex across the gap · <span class="gapc">right plate</span> picks up a current = C·dv/dt. widen the gap → weaker coupling (C falls). nothing material crosses.</div>
+    </div>
+    <p class="pull gap">No charge crosses the gap. The changing field carries the current — and that is real Maxwell physics, not an analogy. The wire was never necessary; the change was.</p>
+
+    <div class="flag"><b>honest flag</b>This is also how unwanted <em>crosstalk</em> works — two traces too close on a board couple whether you want them to or not — and how a touchscreen senses your finger (you change the field). The same effect is the signal and the noise depending on intent; the physics doesn't care which you call it. And it weakens fast with distance: parallel-plate C ∝ 1/gap, so real long-range coupling needs either antennas (radiating fields, a different regime) or large/close conductors.</p>
+  </section>
+
+  <!-- CLOSE -->
+  <section class="sec">
+    <div class="tag">§8 · the channel, complete</div>
+    <h2>One law, a whole <span class="green">communications kit</span></h2>
+    <p>Five instruments, one equation. The slab held a state; the differentiator proved current follows the slope; the coupling cap stripped a bias; the filter chose which changes pass; and the gap carried a message across empty space with no wire. Every one was <code>i = C·dv/dt</code> pointed at a different job — because a capacitor was always a communicator, and the thing it communicates is, only and exactly, <span class="green">change</span>.</p>
+
+    <div class="next">
+      <div class="nt">the series · complete</div>
+      <ol>
+        <li class="done"><b>The slab</b> — Q = C·V, the resting state ✓</li>
+        <li class="done"><b>The differentiator</b> — i = C·dv/dt, change-not-state ✓</li>
+        <li class="done"><b>AC coupling</b> — carry the message, drop the bias ✓</li>
+        <li class="done"><b>The RC filter</b> — choose which changes pass ✓</li>
+        <li class="done"><b>Capacitive coupling</b> — the message across a gap, displacement current ✓</li>
+      </ol>
+    </div>
+    <p class="dim">Where it could go next, if you want a Paper III: the cap as <em>memory</em> (DRAM, sample-and-hold — storing a change long enough to read it), or the cap as <em>sensor</em> (touch, proximity, microphones — the world changing the field), or up into <em>real-world non-idealities</em> (ESR, dielectric absorption — where the ideal model finally has to pay its debts).</p>
+  </section>
+
+  <div class="foot">
+    CAPACITORS AS COMMUNICATORS · PAPER II — THE CHANNEL<br>
+    the one law: <b>i = C·dv/dt</b> · displacement current = ε₀·A·dE/dt = C·dv/dt (checked to the digit)<br>
+    physics-first · three live instruments · cutoff fc = 1/(2πRC) · math pre-verified in node<br>
+    no charge crosses the gap — the change does
+  </div>
+
+</div>
+
+<script>
+"use strict";
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const COL={scope:"#0a0f0c",grid:"#1c2b24",phos:"#6fe6a0",phosDim:"#3a7a58",
+  signal:"#f0a830",current:"#5fd0e0",paper:"#8fa89a",gap:"#c98fe0"};
+
+function setup(cv,ratio){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const cssW=cv.parentElement.clientWidth, cssH=Math.round(cssW*ratio);
+  cv.width=cssW*dpr; cv.height=cssH*dpr; cv.style.height=cssH+"px";
+  const ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx,W:cssW,H:cssH};
+}
+function gridlines(ctx,W,H){ ctx.strokeStyle=COL.grid;ctx.lineWidth=1;
+  for(let x=0;x<=W;x+=W/12){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<=H;y+=H/8){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();} }
+function glowTrace(ctx,pts,getX,getY,color,gw){ ctx.shadowColor=color;ctx.shadowBlur=gw||8;
+  ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();
+  pts.forEach((o,k)=>{const x=getX(o,k),y=getY(o,k);k?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+  ctx.stroke();ctx.shadowBlur=0; }
+
+/* ── (3) AC COUPLING ── */
+(function(){
+  const cv=document.getElementById("couple");
+  const B=document.getElementById("cBias"),A=document.getElementById("cAmp");
+  const Bv=document.getElementById("cBval"),Av=document.getElementById("cAval");
+  let d=setup(cv,0.5); window.addEventListener("resize",()=>d=setup(cv,0.5));
+  function draw(t){
+    const {ctx,W,H}=d; const bias=parseFloat(B.value),amp=parseFloat(A.value);
+    Bv.textContent=(bias>=0?"+":"")+bias.toFixed(1); Av.textContent=amp.toFixed(1);
+    ctx.clearRect(0,0,W,H); gridlines(ctx,W,H);
+    const padL=44,padR=12,plotW=W-padL-padR;
+    const inMid=H*0.30, outMid=H*0.72, sc=H*0.085;
+    ctx.strokeStyle="#2a3b32";ctx.lineWidth=1;
+    [inMid,outMid].forEach(m=>{ctx.beginPath();ctx.moveTo(padL,m);ctx.lineTo(W-padR,m);ctx.stroke();});
+    ctx.font="11px 'IBM Plex Mono',monospace";ctx.textAlign="left";ctx.textBaseline="middle";
+    ctx.fillStyle=COL.signal;ctx.fillText("in",6,inMid); ctx.fillStyle=COL.gap;ctx.fillText("out",6,outMid);
+    // dashed line marking input's zero so bias is visible
+    ctx.setLineDash([3,4]);ctx.strokeStyle="#3a4d43";
+    ctx.beginPath();ctx.moveTo(padL,inMid-bias*sc);ctx.lineTo(W-padR,inMid-bias*sc);ctx.stroke();ctx.setLineDash([]);
+    const scroll=reduce?0:(t*0.12)%1, N=260, pts=[];
+    for(let k=0;k<=N;k++){const p=(k/N+scroll)%1; const w=amp*Math.sin(p*Math.PI*2*3); pts.push({x:padL+plotW*(k/N),in:bias+w,out:w});}
+    glowTrace(ctx,pts,o=>o.x,o=>inMid-o.in*sc,COL.signal);
+    glowTrace(ctx,pts,o=>o.x,o=>outMid-o.out*sc,COL.gap);
+    // the cap symbol between
+    ctx.strokeStyle=COL.phos;ctx.lineWidth=2;const cxp=W*0.5,cyp=H*0.51;
+    ctx.beginPath();ctx.moveTo(cxp-9,cyp-9);ctx.lineTo(cxp-9,cyp+9);ctx.moveTo(cxp+9,cyp-9);ctx.lineTo(cxp+9,cyp+9);ctx.stroke();
+    ctx.fillStyle=COL.phos;ctx.font="10px 'IBM Plex Mono',monospace";ctx.textAlign="center";ctx.fillText("C",cxp,cyp+22);
+    requestAnimationFrame(draw);
+  } requestAnimationFrame(draw);
+})();
+
+/* ── (4) RC FILTER ── */
+(function(){
+  const cv=document.getElementById("filter");
+  const Cut=document.getElementById("fCut"),Tone=document.getElementById("fTone");
+  const Fv=document.getElementById("fFval"),Tv=document.getElementById("fTval");
+  const seg=document.getElementById("fType"),read=document.getElementById("fRead");
+  let type="hp";
+  seg.querySelectorAll(".seg").forEach(s=>s.onclick=()=>{type=s.dataset.t;seg.querySelectorAll(".seg").forEach(o=>o.classList.toggle("on",o===s));});
+  let d=setup(cv,0.56); window.addEventListener("resize",()=>d=setup(cv,0.56));
+  const fmin=20,fmax=2000;
+  const xf=f=>(Math.log(f)-Math.log(fmin))/(Math.log(fmax)-Math.log(fmin));
+  function gain(f,fc){const r=f/fc;return type==="hp"? r/Math.sqrt(1+r*r):1/Math.sqrt(1+r*r);}
+  function draw(){
+    const {ctx,W,H}=d; const fc=parseFloat(Cut.value),tone=parseFloat(Tone.value);
+    Fv.textContent=Math.round(fc)+" Hz"; Tv.textContent=Math.round(tone)+" Hz";
+    ctx.clearRect(0,0,W,H); gridlines(ctx,W,H);
+    const padL=40,padR=16,padT=14,padB=26,plotW=W-padL-padR,plotH=H-padT-padB;
+    const X=f=>padL+plotW*xf(f), Y=g=>padT+plotH*(1-g);
+    // axes
+    ctx.fillStyle=COL.paper;ctx.font="10px 'IBM Plex Mono',monospace";ctx.textBaseline="top";
+    [20,100,1000,2000].forEach(f=>{if(f>=fmin&&f<=fmax){ctx.textAlign="center";ctx.fillStyle="#5a6e62";
+      ctx.fillText(f>=1000?(f/1000)+"k":f, X(f), H-padB+6);}});
+    ctx.textAlign="left";ctx.fillStyle="#5a6e62";ctx.fillText("gain",4,padT);
+    // -3dB line
+    ctx.setLineDash([3,4]);ctx.strokeStyle="#3a4d43";ctx.beginPath();ctx.moveTo(padL,Y(0.707));ctx.lineTo(W-padR,Y(0.707));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle="#5a6e62";ctx.textAlign="right";ctx.fillText("−3dB",W-padR,Y(0.707)-12);
+    // cutoff vertical
+    ctx.strokeStyle=COL.phosDim;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(X(fc),padT);ctx.lineTo(X(fc),H-padB);ctx.stroke();
+    ctx.fillStyle=COL.phos;ctx.textAlign="center";ctx.fillText("fc",X(fc),padT-2<0?2:padT);
+    // the response curve
+    const pts=[];for(let f=fmin;f<=fmax;f*=1.03)pts.push({f,g:gain(f,fc)});
+    glowTrace(ctx,pts,o=>X(o.f),o=>Y(o.g),COL.phos,8);
+    // the test-tone marker
+    const g=gain(tone,fc);
+    ctx.fillStyle=COL.signal;ctx.beginPath();ctx.arc(X(tone),Y(g),5,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="#5a4a2a";ctx.setLineDash([2,3]);ctx.beginPath();ctx.moveTo(X(tone),Y(g));ctx.lineTo(X(tone),H-padB);ctx.stroke();ctx.setLineDash([]);
+    read.innerHTML=`gain at your <span class="amber">${Math.round(tone)} Hz</span> tone: <b>${g.toFixed(3)}</b> (${(20*Math.log10(g)).toFixed(1)} dB) — ${g>0.707?"passing":"attenuated"}. cutoff fc=${Math.round(fc)}Hz where gain=0.707.`;
+    requestAnimationFrame(draw);
+  } requestAnimationFrame(draw);
+})();
+
+/* ── (5) THE GAP — capacitive coupling / displacement current ── */
+(function(){
+  const cv=document.getElementById("gap");
+  const Fr=document.getElementById("gFreq"),Di=document.getElementById("gDist");
+  const Fv=document.getElementById("gFval"),Dv=document.getElementById("gDval");
+  let d=setup(cv,0.62); window.addEventListener("resize",()=>d=setup(cv,0.62));
+  function draw(t){
+    const {ctx,W,H}=d; const fr=parseFloat(Fr.value),dist=parseFloat(Di.value);
+    Fv.textContent=fr.toFixed(1)+"×"; Dv.textContent=dist.toFixed(1)+"×";
+    ctx.clearRect(0,0,W,H); gridlines(ctx,W,H);
+    const cy=H*0.42, plateH=H*0.46, plateW=11;
+    const cx=W*0.42; // shift left so traces fit right
+    const gap=(W*0.085)*dist;
+    const lx=cx-gap, rx=cx+gap;
+    // drive voltage
+    const tt=reduce?0.4:t;
+    const v=Math.sin(tt*1.7*fr);           // driven plate voltage
+    const dvdt=Math.cos(tt*1.7*fr)*1.7*fr;  // its rate
+    const coupling=1/dist;                  // C ∝ 1/gap
+    const ipick=dvdt*coupling;              // induced current ∝ C·dv/dt
+
+    // field lines flexing across the gap (count & brightness ∝ |v|, density ∝ coupling)
+    const nF=7; const mag=Math.abs(v);
+    for(let i=0;i<nF;i++){
+      const fy=cy-plateH/2 + (plateH/(nF))*(i+0.5);
+      const bow=(i-(nF-1)/2)/((nF-1)/2)*gap*0.5*mag; // field bows out
+      ctx.strokeStyle=`rgba(201,143,224,${0.12+0.55*mag*coupling*0.6})`;ctx.lineWidth=1.4;
+      ctx.beginPath();
+      const dir=Math.sign(v)||1;
+      const x0= dir>0? lx+plateW/2 : rx-plateW/2;
+      const x1= dir>0? rx-plateW/2 : lx+plateW/2;
+      ctx.moveTo(x0,fy);
+      ctx.quadraticCurveTo((x0+x1)/2, fy+bow, x1,fy);
+      ctx.stroke();
+    }
+    // plates
+    function plate(x,label,col){
+      ctx.fillStyle="#2a3b32";ctx.fillRect(x-plateW/2,cy-plateH/2,plateW,plateH);
+      ctx.strokeStyle=col;ctx.lineWidth=2;ctx.strokeRect(x-plateW/2,cy-plateH/2,plateW,plateH);
+      ctx.fillStyle=col;ctx.font="10px 'IBM Plex Mono',monospace";ctx.textAlign="center";
+      ctx.fillText(label,x,cy-plateH/2-10);
+    }
+    plate(lx,"DRIVEN",COL.signal);
+    plate(rx,"PICKUP",COL.gap);
+    // "no charge crosses" marker in the gap
+    ctx.fillStyle="#5a6e62";ctx.font="9px 'IBM Plex Mono',monospace";ctx.textAlign="center";
+    ctx.fillText("no charge crosses", cx, cy+plateH/2+16);
+    ctx.fillText("— only the field", cx, cy+plateH/2+28);
+
+    // mini scope on the right: drive v (amber) and pickup i (gap-violet)
+    const sx=W*0.62, sw=W*0.33, sh=H*0.7, sy=H*0.14;
+    ctx.strokeStyle="#2a3b32";ctx.lineWidth=1;ctx.strokeRect(sx,sy,sw,sh);
+    const midV=sy+sh*0.28, midI=sy+sh*0.72, amp=sh*0.16;
+    ctx.fillStyle=COL.signal;ctx.font="10px 'IBM Plex Mono',monospace";ctx.textAlign="left";
+    ctx.fillText("drive v",sx+6,sy+12); ctx.fillStyle=COL.gap;ctx.fillText("pickup i = C·dv/dt",sx+6,sy+sh*0.5+8);
+    const N=120,pts=[];
+    for(let k=0;k<=N;k++){const ph=tt - (1-k/N)*2.2; const vv=Math.sin(ph*1.7*fr); const ii=Math.cos(ph*1.7*fr)*1.7*fr*coupling; pts.push({x:sx+ (sw)*(k/N), v:vv,i:ii});}
+    const iMax=Math.max(...pts.map(o=>Math.abs(o.i)),0.5);
+    glowTrace(ctx,pts,o=>o.x,o=>midV-o.v*amp,COL.signal,6);
+    glowTrace(ctx,pts,o=>o.x,o=>midI-(o.i/iMax)*amp,COL.gap,6);
+
+    requestAnimationFrame(draw);
+  } requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>
