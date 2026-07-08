@@ -1,0 +1,9 @@
+ROOT0-DLW-CHAIN-v1
+index : 457
+slug  : capacitors-ii
+seal  : 4ff23ea37a1576ded707309934e4cdff59480eae136d294179c88128fec3b4f0
+prev  : a53253ebafb20f5e48b734577016ee20ebe740417c802967c407a90bac61b6cb
+link  : 59f66972f63b000927e281cfa86b840d2f93cf8229a64c318550cc6732a7b580
+head  : 3447d3a0533aaf1e29a8bdc67a9774884fb3ae9dbc8a17064b7a008ca3c4ec90
+
+— the tether: link = sha256(index|slug|seal|prev). the chain head commits to the whole corpus.
